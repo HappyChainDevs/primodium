@@ -1,3 +1,4 @@
+import { HappyWalletProvider } from "@happy.tech/react";
 import { Analytics } from "@vercel/analytics/react";
 import ReactDOM from "react-dom/client";
 
@@ -11,7 +12,9 @@ const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <>
-    <App />
-    <Analytics />
+    <HappyWalletProvider>
+      <App />
+      <Analytics />
+    </HappyWalletProvider>
   </>,
 );
