@@ -12,6 +12,7 @@
     "clean:indexer": "pnpm clean-local-docker-indexer",
     "deploy:caldera": "pnpm --filter 'contracts' deploy:caldera",
     "deploy:caldera-sepolia": "pnpm --filter 'contracts' deploy:caldera-sepolia",
+    "deploy:happychain-sepolia": "pnpm --filter 'contracts' deploy:happychain-sepolia",
     "deploy:local": "pnpm --filter 'contracts' deploy:local",
     "deploy:redstone-holesky": "pnpm --filter 'contracts' deploy:redstone-holesky",
     "dev": "run-pty % pnpm --filter 'client' run dev % pnpm dev:core % pnpm dev:node % pnpm deploy:local % pnpm dev:indexer",
