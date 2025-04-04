@@ -11,6 +11,7 @@ const connectorIcons: Record<string, string> = {
   ["MetaMask"]: "/img/icons/web3/metamask.svg",
   ["WalletConnect"]: "/img/icons/web3/walletconnect.svg",
   ["Coinbase Wallet"]: "/img/icons/web3/coinbase.svg",
+  ["HappyWallet"]: "/img/icons/web3/happychain.png",
 };
 
 export const Connect: React.FC = React.memo(() => {
