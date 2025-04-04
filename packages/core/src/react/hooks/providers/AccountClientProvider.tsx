@@ -1,7 +1,8 @@
+import { happyProvider } from "@happy.tech/core";
 import { createBurnerAccount, transportObserver } from "@latticexyz/common";
 import { createClient as createFaucetClient } from "@latticexyz/faucet";
 import React, { createContext, ReactNode, useCallback, useMemo, useRef, useState } from "react";
-import { Address, createWalletClient, fallback, formatEther, Hex, http } from "viem";
+import { Address, createWalletClient, custom, fallback, formatEther, Hex, http, Transport } from "viem";
 
 import { createExternalAccount } from "@/account/createExternalAccount";
 import { createLocalAccount } from "@/account/createLocalAccount";
@@ -96,9 +97,11 @@ export function AccountClientProvider({ children, ...options }: AccountProviderP
     if (useLocal && options.playerPrivateKey)
       console.warn("Private key provided for local account creation, ignoring address");
 
+    const hcTransport = transportObserver(custom(happyProvider) as Transport<"custom", typeof happyProvider>);
+
     const account = useLocal
       ? createLocalAccount(config, options.playerPrivateKey, false)
-      : createExternalAccount(config, options.playerAddress!);
+      : createExternalAccount(config, options.playerAddress!, hcTransport);
 
     if (useLocal) storage.setItem("primodiumPlayerAccount", account.privateKey ?? "");
 
