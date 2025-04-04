@@ -11,6 +11,7 @@ import {
   getContract,
   Hex,
   http,
+  Transport,
 } from "viem";
 import { toAccount } from "viem/accounts";
 
@@ -24,7 +25,11 @@ import { addressToEntity } from "@/utils/global/encode";
  * @param address Address of the account
  * @returns: {@link ExternalAccount}
  */
-export function createExternalAccount(coreConfig: CoreConfig, address: Address): ExternalAccount {
+export function createExternalAccount(
+  coreConfig: CoreConfig,
+  address: Address,
+  customTransport?: Transport,
+): ExternalAccount {
   if (typeof window === "undefined") {
     throw new Error("createExternalAccount must be called in a browser environment");
   }
@@ -42,7 +47,8 @@ export function createExternalAccount(coreConfig: CoreConfig, address: Address):
   const walletClient = createWalletClient({
     ...clientOptions,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transport: custom((window as unknown as { ethereum: any }).ethereum),
+    transport:
+      customTransport ?? (custom((window as unknown as { ethereum: any }).ethereum) as Transport<"custom", any>), // this should probably be created based on chain ID?
   });
 
   const write$ = new Subject<ContractWrite>();
