@@ -72,12 +72,31 @@ const baseSepolia: ChainConfig = {
   },
 };
 
+export const happyChainSepolia: ChainConfig = {
+  name: "HappyChain Sepolia",
+  id: 216,
+  nativeCurrency: { decimals: 18, symbol: "HAPPY", name: "HappyChain" },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.testnet.happy.tech/http"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "HappyChain Sepolia Explorer",
+      url: "https://explorer.testnet.happy.tech",
+    },
+  },
+  // indexerUrl: "http://localhost:3001", // ## [happyTODO :: deploy indexer and then add the URL here] ##
+};
+
 export type ChainConfig = MUDChain & { indexerUrl?: string };
 
 export const chainConfigs = {
   baseSepolia,
   caldera,
   calderaSepolia,
+  happyChainSepolia,
   dev,
   garnet: garnet as ChainConfig,
   redstone: redstone as ChainConfig,
