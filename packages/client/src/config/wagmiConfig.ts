@@ -1,4 +1,3 @@
-import { happyWagmiConnector } from "@happy.tech/core";
 import { createClient } from "viem";
 import { Config, createConfig, http } from "wagmi";
 import { coinbaseWallet, walletConnect } from "wagmi/connectors";
@@ -19,7 +18,6 @@ export const wagmiConfig: Config = createConfig({
   connectors: [
     walletConnect({ projectId }),
     coinbaseWallet({ appName: "wagmi" }),
-    happyWagmiConnector(),
     // injected({target: 'Injected', shimDisconnect: true}),
   ],
 });
