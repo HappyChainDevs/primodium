@@ -1,7 +1,7 @@
+import { requestSessionKey } from "@happy.tech/core";
 import { useEffect, useState } from "react";
 import { FaClipboard, FaExclamationCircle, FaEye, FaEyeSlash, FaInfoCircle, FaTimes, FaUnlink } from "react-icons/fa";
-import { Address, Hex } from "viem";
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { Address } from "viem";
 
 import { STORAGE_PREFIX } from "@primodiumxyz/core";
 import { useAccountClient } from "@primodiumxyz/core/react";
@@ -11,14 +11,21 @@ import { SecondaryCard } from "@/components/core/Card";
 import { TransactionQueueMask } from "@/components/shared/TransactionQueueMask";
 import { useContractCalls } from "@/hooks/useContractCalls";
 import { copyToClipboard } from "@/util/clipboard";
-import { findEntriesWithPrefix } from "@/util/localStorage";
 
-const sessionWalletTooltip =
-  "Bypass annoying confirmation popups by authorizing a session account. This allows you to securely perform certain actions without external confirmation.";
+const sessionWalletTooltip = (
+  <>
+    Bypass confirmation popups by authorizing a session key. Powered by{" "}
+    <span className="text-yellow-400">Happy Wallet</span>, this lets you securely perform actions without repeated
+    approvals.
+  </>
+);
 
 export function Authorize() {
-  const { sessionAccount } = useAccountClient();
-  const { grantAccessWithSignature, revokeAccess } = useContractCalls();
+  const {
+    playerAccount: { worldContract },
+    sessionAccount,
+  } = useAccountClient();
+  const { revokeAccess } = useContractCalls();
   const [showDetails, setShowDetails] = useState(false);
   const [showHelp, setShowHelp] = useState(!localStorage.getItem("hideHelp"));
 
@@ -29,26 +36,26 @@ export function Authorize() {
   // Function to handle private key validation and connection
   const sessionAddress = sessionAccount?.address;
 
-  const submitPrivateKey = async (privateKey: Hex) => {
-    // Validate the private key format here
-    // This is a basic example, adjust the validation according to your requirements
-    const isValid = /^0x[a-fA-F0-9]{64}$/.test(privateKey);
-    if (!isValid) return;
-    const account = privateKeyToAccount(privateKey as Hex);
+  // const _submitPrivateKey = async (privateKey: Hex) => {
+  //   // Validate the private key format here
+  //   // This is a basic example, adjust the validation according to your requirements
+  //   const isValid = /^0x[a-fA-F0-9]{64}$/.test(privateKey);
+  //   if (!isValid) return;
+  //   const account = privateKeyToAccount(privateKey as Hex);
 
-    if (sessionAddress && sessionAddress === account.address) return;
-    else await grantAccessWithSignature(privateKey, { id: defaultEntity });
-  };
+  //   if (sessionAddress && sessionAddress === account.address) return;
+  //   else await grantAccessWithSignature(privateKey, { id: defaultEntity });
+  // };
 
-  const handleRandomPress = () => {
-    const storedKeys = findEntriesWithPrefix();
-    const privateKey = storedKeys.length > 0 ? storedKeys[0].privateKey : generatePrivateKey();
+  // const _handleRandomPress = () => {
+  //   const storedKeys = findEntriesWithPrefix();
+  //   const privateKey = storedKeys.length > 0 ? storedKeys[0].privateKey : generatePrivateKey();
 
-    const account = privateKeyToAccount(privateKey as Hex);
-    localStorage.setItem(STORAGE_PREFIX + account.address, privateKey);
+  //   const account = privateKeyToAccount(privateKey as Hex);
+  //   localStorage.setItem(STORAGE_PREFIX + account.address, privateKey);
 
-    return privateKey;
-  };
+  //   return privateKey;
+  // };
 
   const removeSessionKey = async (publicKey: Address) => {
     await revokeAccess(publicKey);
@@ -136,12 +143,13 @@ export function Authorize() {
             variant="primary"
             size="md"
             className="w-full"
-            onClick={() => {
-              const key = handleRandomPress();
-              submitPrivateKey(key);
+            onClick={async () => {
+              // const key = handleRandomPress();
+              // submitPrivateKey(key);
+              await requestSessionKey(worldContract.address);
             }}
           >
-            CLICK TO AUTHORIZE SESSION ACCOUNT
+            CLICK TO AUTHORIZE SESSION KEY
           </Button>
         )}
       </TransactionQueueMask>

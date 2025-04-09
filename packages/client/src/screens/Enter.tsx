@@ -1,27 +1,30 @@
+import { requestSessionKey } from "@happy.tech/core";
 import { useEffect, useState } from "react";
 import { FaExclamationTriangle, FaInfoCircle } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
-import { STORAGE_PREFIX } from "@primodiumxyz/core";
+// import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+
+// import { STORAGE_PREFIX } from "@primodiumxyz/core";
 import { useAccountClient, useCore } from "@primodiumxyz/core/react";
 import { defaultEntity } from "@primodiumxyz/reactive-tables";
 import { Tooltip } from "@/components/core/Tooltip";
 import { TransactionQueueMask } from "@/components/shared/TransactionQueueMask";
 import { useContractCalls } from "@/hooks/useContractCalls";
-import { findEntriesWithPrefix } from "@/util/localStorage";
+
+// import { findEntriesWithPrefix } from "@/util/localStorage";
 
 import { Landing } from "./Landing";
 
 export const Enter: React.FC = () => {
   const { tables } = useCore();
   const {
-    playerAccount: { entity: playerEntity },
+    playerAccount: { worldContract, entity: playerEntity },
     sessionAccount,
   } = useAccountClient();
 
-  const { grantAccessWithSignature, spawn } = useContractCalls();
+  const { spawn } = useContractCalls();
   const navigate = useNavigate();
   const location = useLocation();
   const [showingToast, setShowingToast] = useState(false);
@@ -93,13 +96,15 @@ export const Enter: React.FC = () => {
     navigate("/game" + location.search);
   };
 
-  const handleDelegate = async () => {
-    const storedKeys = findEntriesWithPrefix();
-    const privateKey = storedKeys.length > 0 ? storedKeys[0].privateKey : generatePrivateKey();
-    const account = privateKeyToAccount(privateKey);
-    localStorage.setItem(STORAGE_PREFIX + account.address, privateKey);
+  const handleRegisterHappySessionKey = async () => {
+    // const storedKeys = findEntriesWithPrefix();
+    // const privateKey = storedKeys.length > 0 ? storedKeys[0].privateKey : generatePrivateKey();
+    // const account = privateKeyToAccount(privateKey);
+    // localStorage.setItem(STORAGE_PREFIX + account.address, privateKey);
 
-    await grantAccessWithSignature(privateKey, { id: defaultEntity });
+    // await grantAccessWithSignature(privateKey, { id: defaultEntity });
+
+    await requestSessionKey(worldContract.address);
   };
 
   return (
@@ -108,7 +113,7 @@ export const Enter: React.FC = () => {
         {state === "delegate" && (
           <div className="grid grid-cols-7 gap-2 items-center pointer-events-auto">
             <button
-              onClick={handleDelegate}
+              onClick={handleRegisterHappySessionKey}
               className="relative btn col-span-6 font-bold outline-none h-fit btn-secondary w-full star-background hover:scale-105"
             >
               <Tooltip
@@ -120,7 +125,7 @@ export const Enter: React.FC = () => {
                   <FaInfoCircle className="w-6 text-info" />
                 </div>
               </Tooltip>
-              Authorize Delegate
+              Register Session Key
             </button>
             <button onClick={confirmSkip} className="btn btn-neutral opacity-80 hover:scale-110">
               Skip
