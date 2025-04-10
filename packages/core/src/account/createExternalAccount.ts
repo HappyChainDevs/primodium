@@ -48,7 +48,7 @@ export function createExternalAccount(
     ...clientOptions,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transport:
-      customTransport ?? (custom((window as unknown as { ethereum: any }).ethereum) as Transport<"custom", any>), // this should probably be created based on chain ID?
+      customTransport ?? (custom((window as unknown as { ethereum: any }).ethereum) as Transport<"custom", any>),
   });
 
   const write$ = new Subject<ContractWrite>();
