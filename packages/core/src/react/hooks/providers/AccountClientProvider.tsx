@@ -1,7 +1,7 @@
 import { happyProvider } from "@happy.tech/core";
 import { createBurnerAccount, transportObserver } from "@latticexyz/common";
 import { createClient as createFaucetClient } from "@latticexyz/faucet";
-import React, { createContext, ReactNode, useCallback, useMemo, useRef, useState } from "react";
+import { createContext, ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { Address, createWalletClient, custom, fallback, formatEther, Hex, http, Transport } from "viem";
 
 import { createExternalAccount } from "@/account/createExternalAccount";
@@ -97,11 +97,18 @@ export function AccountClientProvider({ children, ...options }: AccountProviderP
     if (useLocal && options.playerPrivateKey)
       console.warn("Private key provided for local account creation, ignoring address");
 
-    const hcTransport = transportObserver(custom(happyProvider) as Transport<"custom", typeof happyProvider>);
+    /**
+     * [HAPPY_PRIM] Initializes a custom transport using happyProvider for external account access. This is used when
+     * creating an account linked to an external identity (e.g. social login).
+     *
+     * `transportObserver` is used to allow MUD DevTools to observe transactions. cf:
+     * https://github.com/latticexyz/mud/blob/26d2e3acd8fc0a0852f530e8e1574a68d2baa3d2/CHANGELOG.md?plain=1#L6044
+     */
+    const happyTransport = transportObserver(custom(happyProvider) as Transport<"custom", typeof happyProvider>);
 
     const account = useLocal
-      ? createLocalAccount(config, options.playerPrivateKey, false)
-      : createExternalAccount(config, options.playerAddress!, hcTransport);
+      ? createLocalAccount(config, options.playerPrivateKey, false) // [HAPPY_PRIM] unnecessary to extend this since we want users to use SSO
+      : createExternalAccount(config, options.playerAddress!, happyTransport);
 
     if (useLocal) storage.setItem("primodiumPlayerAccount", account.privateKey ?? "");
 
