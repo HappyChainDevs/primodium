@@ -1,6 +1,7 @@
+import { happyProvider } from "@happy.tech/core";
 import { transportObserver } from "@latticexyz/common";
 import mudConfig from "contracts/mud.config";
-import { createPublicClient, fallback, Hex, http } from "viem";
+import { createPublicClient, custom, fallback, Hex, http, Transport } from "viem";
 
 import { createWorld } from "@primodiumxyz/reactive-tables";
 import { CoreConfig, CreateNetworkResult } from "@/lib/types";
@@ -20,7 +21,11 @@ export function createNetwork(config: CoreConfig): CreateNetworkResult {
 
   const clientOptions = {
     chain: config.chain,
-    transport: transportObserver(fallback([http()])),
+    // [HAPPY_PRIM] publicClient here is used in core/src/txExecute/_execute.
+    // When awaiting the userOp receipt, the client needs to route the request to
+    // our impl. of `eth_getTransactionReceipt` for tx confirm and subsequent
+    // state update within the client.
+    transport: transportObserver(custom(happyProvider) as Transport<"custom", typeof happyProvider>),
     pollingInterval: 1000,
   };
 

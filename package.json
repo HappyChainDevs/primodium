@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm recursive run build",
+    "build:client-core": "pnpm --filter \"./packages/core\" --filter \"./packages/client\" run build",
     "build:contracts": "pnpm --filter 'contracts' build",
     "clean:indexer": "pnpm clean-local-docker-indexer",
     "deploy:caldera": "pnpm --filter 'contracts' deploy:caldera",

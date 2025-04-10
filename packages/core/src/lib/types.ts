@@ -74,7 +74,9 @@ export type CreateNetworkResult = Omit<Recs<MudConfig, typeof otherTableDefs>, "
   /** @property {World} world - The world instance. */
   world: World;
   mudConfig: MudConfig;
-  publicClient: PublicClient<FallbackTransport, ChainConfig, undefined>;
+  // publicClient: PublicClient<FallbackTransport, ChainConfig, undefined>;
+  // [HAPPY_PRIM] see note in core/src/createNetwork
+  publicClient: PublicClient<CustomTransport, ChainConfig, undefined>;
   clock: Clock;
 } & WrapperResult<MudConfig, typeof otherTableDefs> & {
     tables: ContractTables<AllTableDefs<MudConfig, typeof otherTableDefs>> & SyncTables;
