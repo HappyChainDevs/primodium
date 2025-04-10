@@ -3,25 +3,21 @@ import { useEffect, useState } from "react";
 import { FaExclamationTriangle, FaInfoCircle } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Address } from "viem";
 
-// import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-
-// import { STORAGE_PREFIX } from "@primodiumxyz/core";
 import { useAccountClient, useCore } from "@primodiumxyz/core/react";
 import { defaultEntity } from "@primodiumxyz/reactive-tables";
 import { Tooltip } from "@/components/core/Tooltip";
 import { TransactionQueueMask } from "@/components/shared/TransactionQueueMask";
 import { useContractCalls } from "@/hooks/useContractCalls";
-
-// import { findEntriesWithPrefix } from "@/util/localStorage";
+import { HAPPY_STORAGE_PREFIX } from "@/util/localStorage";
 
 import { Landing } from "./Landing";
 
 export const Enter: React.FC = () => {
   const { tables } = useCore();
   const {
-    playerAccount: { worldContract, entity: playerEntity },
-    sessionAccount,
+    playerAccount: { address: playerAddress, worldContract, entity: playerEntity },
   } = useAccountClient();
 
   const { spawn } = useContractCalls();
@@ -40,6 +36,9 @@ export const Enter: React.FC = () => {
           <div className="flex flex-col text-center justify-center items-center gap-2 w-full">
             <FaExclamationTriangle size={24} className="text-warning" />
             Are you sure you want to skip? You will need to confirm every action with your external wallet.
+            <br />
+            <br />
+            You can still enable a session key within the game settings.
           </div>
 
           <div className="flex justify-center w-full gap-2">
@@ -76,17 +75,17 @@ export const Enter: React.FC = () => {
     );
   };
   useEffect(() => {
-    if (!sessionAccount) {
+    if (!isSessionRegistered(playerAddress)) {
       setState("delegate");
     } else {
       setState("play");
     }
-  }, [sessionAccount]);
+  }, [playerAddress]);
 
   useEffect(() => {
-    if (!sessionAccount) return;
-    toast.success(`Session account detected! (${sessionAccount.address.slice(0, 7)})`);
-  }, [sessionAccount]);
+    if (!isSessionRegistered(playerAddress)) return;
+    toast.success(`Session account detected! (${playerAddress.slice(0, 7)})`);
+  }, [playerAddress]);
 
   const handlePlay = async () => {
     const hasSpawned = !!tables.Home.get(playerEntity)?.value;
@@ -96,15 +95,17 @@ export const Enter: React.FC = () => {
     navigate("/game" + location.search);
   };
 
+  const isSessionRegistered = (address: Address): boolean => {
+    return localStorage.getItem(HAPPY_STORAGE_PREFIX + address) === "true";
+  };
+
   const handleRegisterHappySessionKey = async () => {
-    // const storedKeys = findEntriesWithPrefix();
-    // const privateKey = storedKeys.length > 0 ? storedKeys[0].privateKey : generatePrivateKey();
-    // const account = privateKeyToAccount(privateKey);
-    // localStorage.setItem(STORAGE_PREFIX + account.address, privateKey);
-
-    // await grantAccessWithSignature(privateKey, { id: defaultEntity });
-
-    await requestSessionKey(worldContract.address);
+    const isRegistered = isSessionRegistered(playerAddress);
+    if (!isRegistered) {
+      await requestSessionKey(worldContract.address);
+      localStorage.setItem(HAPPY_STORAGE_PREFIX + playerAddress, "true");
+      setState("play");
+    } else return;
   };
 
   return (
