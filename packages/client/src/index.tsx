@@ -10,6 +10,7 @@ const rootElement = document.getElementById("react-root");
 if (!rootElement) throw new Error("React root not found");
 const root = ReactDOM.createRoot(rootElement);
 
+// [HAPPY_PRIM] wrap app + inject wallet using the HProvider
 root.render(
   <>
     <HappyWalletProvider>
