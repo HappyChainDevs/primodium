@@ -1,3 +1,4 @@
+import { happyChainSepolia as happyChainDef } from "@happy.tech/core";
 import { garnet, MUDChain, mudFoundry, redstone } from "@latticexyz/common/chains";
 
 const dev: ChainConfig = {
@@ -73,21 +74,8 @@ const baseSepolia: ChainConfig = {
 };
 
 export const happyChainSepolia: ChainConfig = {
-  name: "HappyChain Sepolia",
-  id: 216,
-  nativeCurrency: { decimals: 18, symbol: "HAPPY", name: "HappyChain" },
-  rpcUrls: {
-    default: {
-      http: ["https://rpc.testnet.happy.tech/http"],
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: "HappyChain Sepolia Explorer",
-      url: "https://explorer.testnet.happy.tech",
-    },
-  },
-  // indexerUrl: "http://localhost:3001", // ## [happyTODO :: deploy indexer and then add the URL here] ##
+  ...happyChainDef,
+  indexerUrl: "http://localhost:3001", // ## [happyTODO :: deploy indexer and then add the URL here] ##
 };
 
 export type ChainConfig = MUDChain & { indexerUrl?: string };
