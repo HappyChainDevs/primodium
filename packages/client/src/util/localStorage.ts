@@ -1,8 +1,6 @@
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 
 import { STORAGE_PREFIX } from "@primodiumxyz/core";
-
-export const HAPPY_STORAGE_PREFIX = "happySessionRegistered:";
 
 export function findEntriesWithPrefix(prefix: string = STORAGE_PREFIX) {
   // Array to hold the matched entries
@@ -37,3 +35,10 @@ export function getPrivateKey(publicKey: Hex): Hex | undefined {
   if (!entry) return;
   return entry as Hex;
 }
+
+// [HAPPY_PRIM] localstorage helpers todotodotodo
+export const HAPPY_STORAGE_PREFIX = "happySessionRegistered:";
+
+export const isSessionRegistered = (address: Address): boolean => {
+  return localStorage.getItem(HAPPY_STORAGE_PREFIX + address) === "true";
+};
