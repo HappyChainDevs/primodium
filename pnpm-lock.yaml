@@ -89,6 +89,12 @@ importers:
       '@fontsource/space-mono':
         specifier: ^5.0.14
         version: 5.0.20
+      '@happy.tech/core':
+        specifier: ^0.2.1
+        version: 0.2.1(@wagmi/core@2.11.5)(viem@2.9.20)
+      '@happy.tech/react':
+        specifier: ^0.2.1
+        version: 0.2.1(@happy.tech/core@0.2.1)(react-dom@18.3.1)(react@18.3.1)
       '@latticexyz/common':
         specifier: 2.0.9
         version: 2.0.9(typescript@5.5.2)(zod@3.23.8)
@@ -342,7 +348,7 @@ importers:
     dependencies:
       '@happy.tech/core':
         specifier: ^0.2.1
-        version: 0.2.1(viem@2.9.20)
+        version: 0.2.1(@wagmi/core@2.11.5)(viem@2.9.20)
       '@latticexyz/block-logs-stream':
         specifier: 2.0.9
         version: 2.0.9(typescript@5.5.2)(zod@3.23.8)
@@ -4123,7 +4129,7 @@ packages:
       purgecss: 2.3.0
     dev: true
 
-  /@happy.tech/core@0.2.1(viem@2.9.20):
+  /@happy.tech/core@0.2.1(@wagmi/core@2.11.5)(viem@2.9.20):
     resolution: {integrity: sha512-y0UcawmRO/2d6i6KpmHffLgrl+uXIZFRg2nWGdCAmtmkOgwW/UMUWEksi3Zsblsxqe9JWEsZI5AIxQIZGgn1aw==}
     peerDependencies:
       '@wagmi/core': ^2.16.3
@@ -4134,7 +4140,20 @@ packages:
       viem:
         optional: true
     dependencies:
+      '@wagmi/core': 2.11.5(@types/react@18.3.3)(react@18.3.1)(typescript@5.5.2)(viem@2.9.20)(zod@3.23.8)
       viem: 2.9.20(typescript@5.5.2)(zod@3.23.8)
+    dev: false
+
+  /@happy.tech/react@0.2.1(@happy.tech/core@0.2.1)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-rQKoQJhJkLBm6DdKTUzVIYPm9oa6fvLQMHQ8J7ncCXPtzuXLrjc95EmhWgOfsiFUnfHf82gXcRn+grJabBaFxA==}
+    peerDependencies:
+      '@happy.tech/core': ^0.2.1
+      react: ^18.3.1
+      react-dom: ^18.3.1
+    dependencies:
+      '@happy.tech/core': 0.2.1(@wagmi/core@2.11.5)(viem@2.9.20)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:

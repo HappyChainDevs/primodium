@@ -1,3 +1,4 @@
+import { HappyWalletProvider } from "@happy.tech/react";
 import { Analytics } from "@vercel/analytics/react";
 import ReactDOM from "react-dom/client";
 
@@ -9,9 +10,12 @@ const rootElement = document.getElementById("react-root");
 if (!rootElement) throw new Error("React root not found");
 const root = ReactDOM.createRoot(rootElement);
 
+// [HAPPY_PRIM] wrap app + inject wallet using the HProvider
 root.render(
   <>
-    <App />
-    <Analytics />
+    <HappyWalletProvider>
+      <App />
+      <Analytics />
+    </HappyWalletProvider>
   </>,
 );
