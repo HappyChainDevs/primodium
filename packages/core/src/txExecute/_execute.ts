@@ -7,7 +7,7 @@ export async function _execute({ network: { waitForTransaction, publicClient } }
 
   try {
     const txHash = await txPromise;
-    // await waitForTransaction(txHash); // doesn't work
+    await waitForTransaction(txHash);
     console.log("[Tx] hash: ", txHash);
 
     // If the transaction runs out of gas, status will be reverted
