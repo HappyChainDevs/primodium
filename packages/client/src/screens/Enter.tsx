@@ -1,27 +1,26 @@
+import { requestSessionKey } from "@happy.tech/core";
 import { useEffect, useState } from "react";
 import { FaExclamationTriangle, FaInfoCircle } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { Address } from "viem";
 
-import { STORAGE_PREFIX } from "@primodiumxyz/core";
 import { useAccountClient, useCore } from "@primodiumxyz/core/react";
 import { defaultEntity } from "@primodiumxyz/reactive-tables";
 import { Tooltip } from "@/components/core/Tooltip";
 import { TransactionQueueMask } from "@/components/shared/TransactionQueueMask";
 import { useContractCalls } from "@/hooks/useContractCalls";
-import { findEntriesWithPrefix } from "@/util/localStorage";
+import { HAPPY_STORAGE_PREFIX } from "@/util/localStorage";
 
 import { Landing } from "./Landing";
 
 export const Enter: React.FC = () => {
   const { tables } = useCore();
   const {
-    playerAccount: { entity: playerEntity },
-    sessionAccount,
+    playerAccount: { address: playerAddress, worldContract, entity: playerEntity },
   } = useAccountClient();
 
-  const { grantAccessWithSignature, spawn } = useContractCalls();
+  const { spawn } = useContractCalls();
   const navigate = useNavigate();
   const location = useLocation();
   const [showingToast, setShowingToast] = useState(false);
@@ -37,6 +36,9 @@ export const Enter: React.FC = () => {
           <div className="flex flex-col text-center justify-center items-center gap-2 w-full">
             <FaExclamationTriangle size={24} className="text-warning" />
             Are you sure you want to skip? You will need to confirm every action with your external wallet.
+            <br />
+            <br />
+            You can still enable a session key within the game settings.
           </div>
 
           <div className="flex justify-center w-full gap-2">
@@ -73,17 +75,17 @@ export const Enter: React.FC = () => {
     );
   };
   useEffect(() => {
-    if (!sessionAccount) {
+    if (!isSessionRegistered(playerAddress)) {
       setState("delegate");
     } else {
       setState("play");
     }
-  }, [sessionAccount]);
+  }, [playerAddress]);
 
   useEffect(() => {
-    if (!sessionAccount) return;
-    toast.success(`Session account detected! (${sessionAccount.address.slice(0, 7)})`);
-  }, [sessionAccount]);
+    if (!isSessionRegistered(playerAddress)) return;
+    toast.success(`Session account detected! (${playerAddress.slice(0, 7)})`);
+  }, [playerAddress]);
 
   const handlePlay = async () => {
     const hasSpawned = !!tables.Home.get(playerEntity)?.value;
@@ -93,13 +95,17 @@ export const Enter: React.FC = () => {
     navigate("/game" + location.search);
   };
 
-  const handleDelegate = async () => {
-    const storedKeys = findEntriesWithPrefix();
-    const privateKey = storedKeys.length > 0 ? storedKeys[0].privateKey : generatePrivateKey();
-    const account = privateKeyToAccount(privateKey);
-    localStorage.setItem(STORAGE_PREFIX + account.address, privateKey);
+  const isSessionRegistered = (address: Address): boolean => {
+    return localStorage.getItem(HAPPY_STORAGE_PREFIX + address) === "true";
+  };
 
-    await grantAccessWithSignature(privateKey, { id: defaultEntity });
+  const handleRegisterHappySessionKey = async () => {
+    const isRegistered = isSessionRegistered(playerAddress);
+    if (!isRegistered) {
+      await requestSessionKey(worldContract.address);
+      localStorage.setItem(HAPPY_STORAGE_PREFIX + playerAddress, "true");
+      setState("play");
+    } else return;
   };
 
   return (
@@ -108,7 +114,7 @@ export const Enter: React.FC = () => {
         {state === "delegate" && (
           <div className="grid grid-cols-7 gap-2 items-center pointer-events-auto">
             <button
-              onClick={handleDelegate}
+              onClick={handleRegisterHappySessionKey}
               className="relative btn col-span-6 font-bold outline-none h-fit btn-secondary w-full star-background hover:scale-105"
             >
               <Tooltip
@@ -120,7 +126,7 @@ export const Enter: React.FC = () => {
                   <FaInfoCircle className="w-6 text-info" />
                 </div>
               </Tooltip>
-              Authorize Delegate
+              Register Session Key
             </button>
             <button onClick={confirmSkip} className="btn btn-neutral opacity-80 hover:scale-110">
               Skip
