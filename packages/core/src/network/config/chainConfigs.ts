@@ -75,7 +75,7 @@ const baseSepolia: ChainConfig = {
 
 export const happyChainSepolia: ChainConfig = {
   ...happyChainDef,
-  indexerUrl: "http://localhost:3001", // ## [happyTODO :: deploy indexer and then add the URL here] ##
+  indexerUrl: "http://148.113.212.211:3001",
 };
 
 export type ChainConfig = MUDChain & { indexerUrl?: string };
