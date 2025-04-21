@@ -75,7 +75,7 @@ const baseSepolia: ChainConfig = {
 
 export const happyChainSepolia: ChainConfig = {
   ...happyChainDef,
-  indexerUrl: "http://148.113.212.211:3001",
+  indexerUrl: "https://primodium-indexer.happy.tech/",
 };
 
 export type ChainConfig = MUDChain & { indexerUrl?: string };
