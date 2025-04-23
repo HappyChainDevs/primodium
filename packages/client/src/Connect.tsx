@@ -8,10 +8,7 @@ import { usePersistentStore } from "@primodiumxyz/game/src/stores/PersistentStor
 import { Landing } from "@/screens/Landing";
 
 const connectorIcons: Record<string, string> = {
-  ["MetaMask"]: "/img/icons/web3/metamask.svg",
-  ["WalletConnect"]: "/img/icons/web3/walletconnect.svg",
-  ["Coinbase Wallet"]: "/img/icons/web3/coinbase.svg",
-  ["HappyWallet"]: "/img/icons/web3/happychain.png", // [HAPPY_PRIM] new icon
+  ["HappyChain Wagmi Provider"]: "/img/icons/web3/happychain.png", // [HAPPY_PRIM] new icon, provided name is configured within the package
 };
 
 export const Connect: React.FC = React.memo(() => {
@@ -19,6 +16,8 @@ export const Connect: React.FC = React.memo(() => {
   const { connect, connectors, error, isPending } = useConnect();
   const { noExternalAccount, setNoExternalAccount } = usePersistentStore();
   const [showingToast, setShowingToast] = useState(false);
+
+  console.log(connectors);
 
   useEffect(() => {
     if (error) toast.warn(error.message);
