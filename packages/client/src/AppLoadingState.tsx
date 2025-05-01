@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { minEth } from "@primodiumxyz/core";
 import { useAccountClient, useSyncStatus } from "@primodiumxyz/core/react";
@@ -21,6 +22,11 @@ export default function AppLoadingState() {
     const sessionBalanceReady = !sessionAccount || (sessionBalanceData.data?.value ?? 0n) >= minEth;
     return playerBalanceReady && sessionBalanceReady;
   }, [loading, playerBalanceData, sessionAccount, sessionBalanceData]);
+
+  useEffect(() => {
+    if (!balanceReady) toast.warn("Please top up your $HAPPY balance.");
+  }, [balanceReady]);
+
   return (
     <div className="h-screen relative">
       {!error && (
@@ -44,7 +50,7 @@ export default function AppLoadingState() {
               </div>
             </div>
           )}
-          {!loading && balanceReady && (
+          {!loading && (
             <BrowserRouter>
               <PrimodiumRoutes />
             </BrowserRouter>

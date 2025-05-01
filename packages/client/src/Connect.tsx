@@ -17,8 +17,6 @@ export const Connect: React.FC = React.memo(() => {
   const { noExternalAccount, setNoExternalAccount } = usePersistentStore();
   const [showingToast, setShowingToast] = useState(false);
 
-  console.log(connectors);
-
   useEffect(() => {
     if (error) toast.warn(error.message);
   }, [error]);
