@@ -22,9 +22,8 @@ jobs:
 
       - name: Build code
         run: |
-            cd packages/client
             pnpm install
-            pnpm build
+            pnpm build:client-core
 
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.7
