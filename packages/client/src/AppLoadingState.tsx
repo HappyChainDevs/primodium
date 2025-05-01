@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { minEth } from "@primodiumxyz/core";
@@ -13,23 +13,8 @@ import { Sandbox } from "@/screens/Sandbox";
 import { Statistics } from "@/screens/Statistics";
 
 export default function AppLoadingState() {
-  const { playerBalanceData, sessionBalanceData, requestDrip } = useDripAccount();
+  const { playerBalanceData, sessionBalanceData } = useDripAccount();
   const { sessionAccount, playerAccount } = useAccountClient();
-
-  useEffect(() => {
-    const sessionBalance = sessionBalanceData.data?.value;
-    if (!sessionAccount?.address || sessionBalanceData.isLoading || !sessionBalance || sessionBalance >= minEth) return;
-    console.log("dripping session account");
-    requestDrip(sessionAccount.address);
-  }, [sessionAccount?.address, sessionBalanceData.data?.value, sessionBalanceData.isLoading]);
-
-  useEffect(() => {
-    const playerBalance = playerBalanceData.data?.value;
-    if (sessionBalanceData.isLoading || !playerBalance || playerBalance >= minEth) return;
-    console.log("dripping player account");
-    requestDrip(playerAccount.address);
-  }, [playerAccount.address, sessionBalanceData.isLoading, playerBalanceData.data?.value]);
-
   const { loading, error, progress, message } = useSyncStatus(playerAccount.entity);
   const balanceReady = useMemo(() => {
     const playerBalanceReady = (playerBalanceData.data?.value ?? 0n) >= minEth;
@@ -40,15 +25,6 @@ export default function AppLoadingState() {
     <div className="h-screen relative">
       {!error && (
         <div className="relative">
-          {!loading && !balanceReady && (
-            <div className="flex flex-col items-center justify-center h-screen text-white gap-4">
-              <p className="text-lg text-white">
-                <span className="">Dripping Eth to Primodium account</span>
-                <span>&hellip;</span>
-              </p>
-              <Progress value={100} max={100} className="animate-pulse w-56" />
-            </div>
-          )}
           {loading && (
             <div className="flex items-center justify-center h-screen">
               <div className="flex flex-col items-center gap-4">
