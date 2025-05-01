@@ -23,6 +23,7 @@ jobs:
       - name: Build code
         run: |
             echo ${{ vars.PRIMODIUM_ENV_FILE }} > .env
+            unix2dos .env
             pnpm install
             pnpm build:client-core
 
