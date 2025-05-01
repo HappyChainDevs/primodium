@@ -22,10 +22,11 @@ jobs:
 
       - name: Build code
         run: |
-            echo ${{ vars.PRIMODIUM_ENV_FILE }} > .env
-            unix2dos .env
-            pnpm install
-            pnpm build:client-core
+          cat > .env <<-EOF
+          ${{vars.PRIMODIUM_ENV_FILE}}
+          EOF
+          pnpm install
+          pnpm build:client-core
 
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.7
