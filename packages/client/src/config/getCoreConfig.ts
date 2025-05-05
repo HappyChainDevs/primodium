@@ -1,9 +1,17 @@
 import worldsJson from "contracts/worlds.json";
 import { Address, Hex } from "viem";
 
-import { chainConfigs, CoreConfig } from "@primodiumxyz/core";
+import { ChainConfig, chainConfigs, CoreConfig } from "@primodiumxyz/core";
 
 const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
+
+const findChainById = (id: number | string): ChainConfig => {
+  const chain = Object.values(chainConfigs).find((chain) => chain.id === Number(id));
+  if (!chain) {
+    throw new Error(`No chain found with ID ${id}`);
+  }
+  return chain;
+};
 
 export const getCoreConfig = (): CoreConfig => {
   // Ignore deployment URL params on production subdomains (primodium.com)
@@ -11,9 +19,10 @@ export const getCoreConfig = (): CoreConfig => {
     ? new URLSearchParams()
     : new URLSearchParams(window.location.search);
 
-  const chainId = (params.get("chainid") || import.meta.env.PRI_CHAIN_ID || "dev") as keyof typeof chainConfigs;
+  const chainId = params.get("chainid") || import.meta.env.PRI_CHAIN_ID || "dev";
+  const chain = findChainById(chainId);
 
-  const chain = chainConfigs[chainId];
+  console.log(chain);
 
   const world = worlds[chain.id];
   const worldAddress = (params.get("worldAddress") || world?.address) as Address;

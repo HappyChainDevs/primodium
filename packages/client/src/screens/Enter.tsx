@@ -104,7 +104,7 @@ export const Enter: React.FC = () => {
 
   return (
     <Landing>
-      <TransactionQueueMask queueItemId={defaultEntity} className="w-4/5 z-20">
+      <TransactionQueueMask queueItemId={defaultEntity} className="w-4/5 z-20 space-y-2">
         {state === "delegate" && (
           <div className="grid grid-cols-7 gap-2 items-center pointer-events-auto">
             <button
