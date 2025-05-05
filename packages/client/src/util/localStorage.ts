@@ -1,4 +1,4 @@
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 
 import { STORAGE_PREFIX } from "@primodiumxyz/core";
 
@@ -35,3 +35,10 @@ export function getPrivateKey(publicKey: Hex): Hex | undefined {
   if (!entry) return;
   return entry as Hex;
 }
+
+// [HAPPY_PRIM] storage helpers for session keys
+export const HAPPY_STORAGE_PREFIX = "[HAPPY_PRIM] sessionKeyRegistered:";
+
+export const isHappySessionKeyRegistered = (address: Address): boolean => {
+  return localStorage.getItem(HAPPY_STORAGE_PREFIX + address) === "true";
+};

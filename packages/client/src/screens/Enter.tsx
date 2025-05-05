@@ -1,32 +1,32 @@
+import { requestSessionKey } from "@happy.tech/core";
 import { useEffect, useState } from "react";
 import { FaExclamationTriangle, FaInfoCircle } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
-import { STORAGE_PREFIX } from "@primodiumxyz/core";
 import { useAccountClient, useCore } from "@primodiumxyz/core/react";
 import { defaultEntity } from "@primodiumxyz/reactive-tables";
 import { Tooltip } from "@/components/core/Tooltip";
 import { TransactionQueueMask } from "@/components/shared/TransactionQueueMask";
 import { useContractCalls } from "@/hooks/useContractCalls";
-import { findEntriesWithPrefix } from "@/util/localStorage";
+import { HAPPY_STORAGE_PREFIX, isHappySessionKeyRegistered } from "@/util/localStorage";
 
 import { Landing } from "./Landing";
 
 export const Enter: React.FC = () => {
   const { tables } = useCore();
   const {
-    playerAccount: { entity: playerEntity },
+    playerAccount: { address: playerAddress, worldContract, entity: playerEntity },
     sessionAccount,
   } = useAccountClient();
 
-  const { grantAccessWithSignature, spawn } = useContractCalls();
+  const { spawn } = useContractCalls();
   const navigate = useNavigate();
   const location = useLocation();
   const [showingToast, setShowingToast] = useState(false);
 
   const [state, setState] = useState<"loading" | "delegate" | "play">("loading");
+
   const confirmSkip = async () => {
     toast.dismiss();
     if (showingToast) await new Promise((resolve) => setTimeout(resolve, 500));
@@ -37,6 +37,9 @@ export const Enter: React.FC = () => {
           <div className="flex flex-col text-center justify-center items-center gap-2 w-full">
             <FaExclamationTriangle size={24} className="text-warning" />
             Are you sure you want to skip? You will need to confirm every action with your external wallet.
+            <br />
+            <br />
+            You can still enable a session key within the game settings.
           </div>
 
           <div className="flex justify-center w-full gap-2">
@@ -72,8 +75,9 @@ export const Enter: React.FC = () => {
       },
     );
   };
+
   useEffect(() => {
-    if (!sessionAccount) {
+    if (!isHappySessionKeyRegistered(playerAddress)) {
       setState("delegate");
     } else {
       setState("play");
@@ -93,13 +97,14 @@ export const Enter: React.FC = () => {
     navigate("/game" + location.search);
   };
 
-  const handleDelegate = async () => {
-    const storedKeys = findEntriesWithPrefix();
-    const privateKey = storedKeys.length > 0 ? storedKeys[0].privateKey : generatePrivateKey();
-    const account = privateKeyToAccount(privateKey);
-    localStorage.setItem(STORAGE_PREFIX + account.address, privateKey);
+  const handleHappySessionKeyRegister = async () => {
+    if (!isHappySessionKeyRegistered(playerAddress)) {
+      // once this resolves, write a status into local storage that this has been done
+      await requestSessionKey(worldContract.address);
 
-    await grantAccessWithSignature(privateKey, { id: defaultEntity });
+      localStorage.setItem(HAPPY_STORAGE_PREFIX + playerAddress, "true");
+      setState("play");
+    } else return;
   };
 
   return (
@@ -108,7 +113,7 @@ export const Enter: React.FC = () => {
         {state === "delegate" && (
           <div className="grid grid-cols-7 gap-2 items-center pointer-events-auto">
             <button
-              onClick={handleDelegate}
+              onClick={handleHappySessionKeyRegister}
               className="relative btn col-span-6 font-bold outline-none h-fit btn-secondary w-full star-background hover:scale-105"
             >
               <Tooltip
