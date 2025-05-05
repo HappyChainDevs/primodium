@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import { useAccount, useConnect } from "wagmi";
 
-import { usePersistentStore } from "@primodiumxyz/game/src/stores/PersistentStore";
 import { Landing } from "@/screens/Landing";
 
 const connectorIcons: Record<string, string> = {
@@ -14,13 +13,12 @@ const connectorIcons: Record<string, string> = {
 export const Connect: React.FC = React.memo(() => {
   const { connector, isConnected } = useAccount();
   const { connect, connectors, error, isPending } = useConnect();
-  const { noExternalAccount } = usePersistentStore();
 
   useEffect(() => {
     if (error) toast.warn(error.message);
   }, [error]);
 
-  if (isConnected || noExternalAccount) return null;
+  if (isConnected) return null;
 
   return (
     <Landing>
