@@ -74,7 +74,7 @@ export const TransferSelect = ({ side }: { side: "left" | "right" }) => {
           ))}
         </div>
         {showNewFleet && (
-          <div className="h-[5.5rem] gap-2 border-t border-t-primary mt-1 border-t-2 flex justify-center items-center flex-col">
+          <div className="h-[5.5rem] gap-2 border-t-2 border-t-primary mt-1 flex justify-center items-center flex-col">
             {!canBuildFleet && (
               <p className="opacity-70 text-sm text-center">
                 Reached Max Fleet Count. Build a Starmapper Station to build more fleets.
