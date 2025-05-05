@@ -1,6 +1,5 @@
 import { chunk } from "lodash";
-import React, { useEffect, useState } from "react";
-import { FaExclamationTriangle } from "react-icons/fa";
+import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import { useAccount, useConnect } from "wagmi";
 
@@ -11,74 +10,21 @@ const connectorIcons: Record<string, string> = {
   ["HappyChain Wagmi Provider"]: "/img/icons/web3/happychain.png", // [HAPPY_PRIM] new icon, provided name is configured within the package
 };
 
+/** [HAPPY_PRIM] We only show the happychain connector here since we want them to play using the HappyWallet! */
 export const Connect: React.FC = React.memo(() => {
   const { connector, isConnected } = useAccount();
   const { connect, connectors, error, isPending } = useConnect();
-  const { noExternalAccount, setNoExternalAccount } = usePersistentStore();
-  const [showingToast, setShowingToast] = useState(false);
+  const { noExternalAccount } = usePersistentStore();
 
   useEffect(() => {
     if (error) toast.warn(error.message);
   }, [error]);
-
-  const confirmToast = async () => {
-    toast.dismiss();
-    if (showingToast) await new Promise((resolve) => setTimeout(resolve, 500));
-    setShowingToast(true);
-    toast(
-      ({ closeToast }) => (
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col text-center justify-center items-center gap-2 w-full">
-            <FaExclamationTriangle size={24} className="text-warning" />
-            Are you sure you want to login as guest? You will not be able to win prizes or play across devices.
-          </div>
-
-          <div className="flex justify-center w-full gap-2">
-            <button
-              className="btn btn-secondary btn-xs"
-              onClick={() => {
-                setNoExternalAccount(true);
-                closeToast && closeToast();
-              }}
-            >
-              Confirm
-            </button>
-            <button
-              onClick={() => {
-                setShowingToast(false);
-                closeToast && closeToast();
-              }}
-              className="btn btn-primary btn-xs"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ),
-      {
-        // className: "border-error",
-        position: "top-center",
-        autoClose: false,
-        closeOnClick: false,
-        draggable: false,
-        closeButton: false,
-        hideProgressBar: true,
-      },
-    );
-  };
 
   if (isConnected || noExternalAccount) return null;
 
   return (
     <Landing>
       <div className="flex flex-col gap-2 w-full">
-        <button
-          className="btn-lg btn-secondary star-background w-full btn join-item inline pointer-events-auto font-bold outline-none h-fit z-10"
-          onClick={confirmToast}
-        >
-          Login as Guest
-        </button>
-
         {chunk(
           connectors.filter((x) => x.id !== connector?.id),
           2,
