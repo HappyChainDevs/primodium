@@ -27,6 +27,7 @@ export const setupSessionAccount = async (core: Core, account: AccountClient) =>
     return true;
   }
 
+  // this is fully for mud's delegate system - we may need none of this for happy session keys
   const potentialAuthorizeds = query({ with: [tables.UserDelegationControl] }).reduce((prev, entity) => {
     const key = decodeEntity(tables.UserDelegationControl.metadata.abiKeySchema, entity) as {
       delegator: Address;
