@@ -1,0 +1,59 @@
+name: Deploy primodium interface
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.0
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Build code
+        run: |
+          cat > .env <<-EOF
+          ${{vars.PRIMODIUM_ENV_FILE}}
+          EOF
+          pnpm install
+          pnpm build:client-core
+
+      - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: "packages/client/dist"
+          target: /home/deployer/primodium-interface
+          strip_components: 3 # Remove the first 3 levels of directories from the source path to copy only the files inside dist
+          rm: true
+
+      - name: Deploy primodium interface to server
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            chmod -R o+rX /home/deployer/primodium-interface
+            mv /home/deployer/primodium-interface /tmp
+            sudo -u primodium_interface bash -c '
+              rm -rf /var/www/primodium-interface/*
+              cp -r /tmp/primodium-interface/* /var/www/primodium-interface
+            '
+            rm -rf /tmp/primodium-interface
+            
+            
