@@ -33,6 +33,8 @@ This monorepo contains the entire stack for running Primodium, including the Rea
 
 ### Installation
 
+[![Test suites for client and contracts](https://github.com/HappyChainDevs/primodium/actions/workflows/test.yml/badge.svg)](https://github.com/HappyChainDevs/primodium/actions/workflows/test.yml)
+
 #### Prerequisites
 
 There are a few CLI tools to install to be compatible with the entire monorepo.
