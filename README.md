@@ -1,5 +1,7 @@
 # Primodium v0.11.1
 
+[![Test suites for client and contracts](https://github.com/HappyChainDevs/primodium/actions/workflows/test.yml/badge.svg)](https://github.com/HappyChainDevs/primodium/actions/workflows/test.yml)
+
 A fully onchain space-based factory-building game, built with MUD & Phaser.
 
 - [Introduction](#introduction)
@@ -32,8 +34,6 @@ In this game, players can:
 This monorepo contains the entire stack for running Primodium, including the React client and Phaser game, the local postgres indexer (that can be deployed to a cloud provider as well) and all the contracts.
 
 ### Installation
-
-[![Test suites for client and contracts](https://github.com/HappyChainDevs/primodium/actions/workflows/test.yml/badge.svg)](https://github.com/HappyChainDevs/primodium/actions/workflows/test.yml)
 
 #### Prerequisites
 
